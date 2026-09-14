@@ -1,0 +1,6 @@
+{
+  "name": "The Journey of Ganesha",
+  "description": "An interactive 5-level educational adventure game celebrating Ganesh Chaturthi with stories, wisdom, interactive challenges, and completion certificates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,371 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <!-- Filter for soft glow -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#78350f" flood-opacity="0.35" />
+    </filter>
+
+    <!-- Gradients -->
+    <!-- Halo Radial -->
+    <radialGradient id="haloSun" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#fffbeb" stop-opacity="0.95" />
+      <stop offset="35%" stop-color="#fde047" stop-opacity="0.85" />
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#d97706" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 3D Gold Gradient for Crown and Ornaments -->
+    <linearGradient id="gold3D" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="20%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#eab308" />
+      <stop offset="80%" stop-color="#ca8a04" />
+      <stop offset="100%" stop-color="#854d0e" />
+    </linearGradient>
+
+    <!-- Secondary Soft Gold -->
+    <linearGradient id="goldSoft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef9c3" />
+      <stop offset="40%" stop-color="#facc15" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+
+    <!-- Baby Skin Gradient (Soft Sandalwood/Peach 3D) -->
+    <radialGradient id="skinFace" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#fff7ed" />
+      <stop offset="40%" stop-color="#fed7aa" />
+      <stop offset="85%" stop-color="#fdba74" />
+      <stop offset="100%" stop-color="#fb923c" />
+    </radialGradient>
+
+    <!-- Ear Pink Inner Gradient -->
+    <radialGradient id="earInner" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#fecdd3" />
+      <stop offset="60%" stop-color="#fda4af" />
+      <stop offset="100%" stop-color="#fb7185" />
+    </radialGradient>
+
+    <!-- Pink Silk Dhoti Gradient -->
+    <linearGradient id="dhotiPink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6" />
+      <stop offset="50%" stop-color="#ec4899" />
+      <stop offset="100%" stop-color="#be185d" />
+    </linearGradient>
+
+    <!-- Ruby Gem Gradient -->
+    <radialGradient id="rubyRed" cx="35%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#fecdd3" />
+      <stop offset="30%" stop-color="#f43f5e" />
+      <stop offset="80%" stop-color="#be123c" />
+      <stop offset="100%" stop-color="#881337" />
+    </radialGradient>
+
+    <!-- Lotus Petal Gradient -->
+    <linearGradient id="lotusPink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fdf2f8" />
+      <stop offset="40%" stop-color="#f472b6" />
+      <stop offset="100%" stop-color="#db2777" />
+    </linearGradient>
+
+    <!-- Eye Gradient -->
+    <radialGradient id="eyeIris" cx="40%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#78350f" />
+      <stop offset="60%" stop-color="#451a03" />
+      <stop offset="100%" stop-color="#1c1917" />
+    </radialGradient>
+  </defs>
+
+  <!-- 1. DIVINE AURA / GLOWING HALO -->
+  <circle cx="250" cy="210" r="190" fill="url(#haloSun)" filter="url(#softGlow)" />
+
+  <!-- 2. LOTUS THRONE BASE (PADMA ASANA) -->
+  <g id="lotusThrone" filter="url(#dropShadow)">
+    <!-- Golden Lotus Base Plinth -->
+    <ellipse cx="250" cy="430" rx="165" ry="35" fill="url(#gold3D)" />
+    <ellipse cx="250" cy="426" rx="155" ry="28" fill="#78350f" opacity="0.3" />
+    <ellipse cx="250" cy="422" rx="150" ry="25" fill="url(#goldSoft)" />
+
+    <!-- Lotus Petals (Back layer) -->
+    <path d="M130 420 C110 390 140 370 170 395 C150 415 135 420 130 420 Z" fill="url(#lotusPink)" />
+    <path d="M370 420 C390 390 360 370 330 395 C350 415 365 420 370 420 Z" fill="url(#lotusPink)" />
+
+    <!-- Lotus Petals (Front Fan) -->
+    <path d="M160 435 C140 405 180 390 205 420 Z" fill="url(#lotusPink)" />
+    <path d="M340 435 C360 405 320 390 295 420 Z" fill="url(#lotusPink)" />
+    <path d="M205 440 C190 410 230 395 250 425 Z" fill="url(#lotusPink)" />
+    <path d="M295 440 C310 410 270 395 250 425 Z" fill="url(#lotusPink)" />
+    <path d="M250 442 C230 410 270 410 250 442 Z" fill="url(#lotusPink)" />
+    <!-- Pearl bead trim on throne rim -->
+    <g fill="#fffbeb">
+      <circle cx="140" cy="430" r="3.5" /><circle cx="160" cy="433" r="3.5" />
+      <circle cx="180" cy="435" r="3.5" /><circle cx="200" cy="437" r="3.5" />
+      <circle cx="220" cy="438" r="3.5" /><circle cx="240" cy="439" r="3.5" />
+      <circle cx="260" cy="439" r="3.5" /><circle cx="280" cy="438" r="3.5" />
+      <circle cx="300" cy="437" r="3.5" /><circle cx="320" cy="435" r="3.5" />
+      <circle cx="340" cy="433" r="3.5" /><circle cx="360" cy="430" r="3.5" />
+    </g>
+  </g>
+
+  <!-- 3. LARGE PINK ELEPHANT EARS (BEHIND BODY) -->
+  <g id="ears" filter="url(#dropShadow)">
+    <!-- Left Ear (viewer left) -->
+    <path d="M175 190 C120 150 70 170 85 240 C95 285 140 300 175 275 Z" fill="url(#skinFace)" />
+    <path d="M165 195 C125 165 90 185 102 238 C110 272 145 285 165 265 Z" fill="url(#earInner)" opacity="0.85" />
+    <!-- Left Ear Gold Kundala / Earring -->
+    <circle cx="95" cy="270" r="11" fill="url(#gold3D)" />
+    <circle cx="95" cy="270" r="6" fill="#fff" opacity="0.6" />
+    <path d="M95 281 L95 292" stroke="url(#gold3D)" stroke-width="3" />
+    <ellipse cx="95" cy="296" rx="5" ry="7" fill="url(#rubyRed)" />
+
+    <!-- Right Ear (viewer right) -->
+    <path d="M325 190 C380 150 430 170 415 240 C405 285 360 300 325 275 Z" fill="url(#skinFace)" />
+    <path d="M335 195 C375 165 410 185 398 238 C390 272 355 285 335 265 Z" fill="url(#earInner)" opacity="0.85" />
+    <!-- Right Ear Gold Kundala / Earring -->
+    <circle cx="405" cy="270" r="11" fill="url(#gold3D)" />
+    <circle cx="405" cy="270" r="6" fill="#fff" opacity="0.6" />
+    <path d="M405 281 L405 292" stroke="url(#gold3D)" stroke-width="3" />
+    <ellipse cx="405" cy="296" rx="5" ry="7" fill="url(#rubyRed)" />
+  </g>
+
+  <!-- 4. ORNATE SUNBURST / PRABHAVALI BEHIND CROWN -->
+  <g id="prabhavali">
+    <circle cx="250" cy="145" r="105" fill="none" stroke="url(#goldSoft)" stroke-width="4" opacity="0.7" />
+    <circle cx="250" cy="145" r="90" fill="none" stroke="url(#gold3D)" stroke-width="2" stroke-dasharray="4 6" opacity="0.8" />
+    <!-- Radiant Filigree Spikes -->
+    <g stroke="url(#gold3D)" stroke-width="3" stroke-linecap="round">
+      <line x1="250" y1="35" x2="250" y2="50" />
+      <line x1="215" y1="40" x2="220" y2="54" />
+      <line x1="285" y1="40" x2="280" y2="54" />
+      <line x1="182" y1="55" x2="190" y2="68" />
+      <line x1="318" y1="55" x2="310" y2="68" />
+      <line x1="155" y1="80" x2="166" y2="90" />
+      <line x1="345" y1="80" x2="334" y2="90" />
+      <line x1="136" y1="112" x2="150" y2="120" />
+      <line x1="364" y1="112" x2="350" y2="120" />
+    </g>
+  </g>
+
+  <!-- 5. CHUBBY BABY BODY & LEGS (PADMASANA) -->
+  <g id="babyBody" filter="url(#dropShadow)">
+    <!-- Legs folded in Pink Dhoti -->
+    <path d="M145 370 C135 410 180 430 250 430 C320 430 365 410 355 370 C340 330 310 330 250 330 C190 330 160 330 145 370 Z" fill="url(#dhotiPink)" />
+    <!-- Gold Embroidered Border & Pleats on Dhoti -->
+    <path d="M175 422 C210 428 290 428 325 422" stroke="url(#gold3D)" stroke-width="7" fill="none" stroke-linecap="round" />
+    <path d="M235 345 C240 375 240 405 235 425" stroke="url(#gold3D)" stroke-width="4" fill="none" />
+    <path d="M250 345 C250 380 250 410 250 426" stroke="url(#gold3D)" stroke-width="4" fill="none" />
+    <path d="M265 345 C260 375 260 405 265 425" stroke="url(#gold3D)" stroke-width="4" fill="none" />
+
+    <!-- Cute Baby Feet -->
+    <!-- Left Foot -->
+    <ellipse cx="180" cy="408" rx="22" ry="14" fill="url(#skinFace)" transform="rotate(-15 180 408)" />
+    <circle cx="165" cy="402" r="5" fill="url(#skinFace)" />
+    <circle cx="173" cy="399" r="4.5" fill="url(#skinFace)" />
+    <circle cx="181" cy="397" r="4" fill="url(#skinFace)" />
+    <circle cx="188" cy="397" r="3.5" fill="url(#skinFace)" />
+    <circle cx="194" cy="398" r="3" fill="url(#skinFace)" />
+    <!-- Golden Payal (Anklet) Left -->
+    <path d="M188 418 C195 412 195 402 188 396" stroke="url(#gold3D)" stroke-width="4" fill="none" />
+
+    <!-- Right Foot -->
+    <ellipse cx="320" cy="408" rx="22" ry="14" fill="url(#skinFace)" transform="rotate(15 320 408)" />
+    <circle cx="335" cy="402" r="5" fill="url(#skinFace)" />
+    <circle cx="327" cy="399" r="4.5" fill="url(#skinFace)" />
+    <circle cx="319" cy="397" r="4" fill="url(#skinFace)" />
+    <circle cx="312" cy="397" r="3.5" fill="url(#skinFace)" />
+    <circle cx="306" cy="398" r="3" fill="url(#skinFace)" />
+    <!-- Golden Payal (Anklet) Right -->
+    <path d="M312 418 C305 412 305 402 312 396" stroke="url(#gold3D)" stroke-width="4" fill="none" />
+
+    <!-- Chubby Baby Belly (Lambodara) -->
+    <ellipse cx="250" cy="325" rx="68" ry="58" fill="url(#skinFace)" />
+    <!-- Soft 3D Belly Highlight -->
+    <ellipse cx="245" cy="315" rx="40" ry="32" fill="#fff7ed" opacity="0.4" />
+    <!-- Cute Navel (Umbilicus) with Red Kumkum -->
+    <circle cx="250" cy="345" r="4" fill="#ea580c" opacity="0.6" />
+    <circle cx="250" cy="345" r="2" fill="#9a3412" />
+
+    <!-- Sacred Golden Belly Chain / Udara Bandha -->
+    <path d="M190 320 C220 355 280 355 310 320" stroke="url(#gold3D)" stroke-width="5" fill="none" />
+    <circle cx="250" cy="348" r="6" fill="url(#rubyRed)" />
+
+    <!-- Golden Sacred Thread (Yajnopavita / Janeyu) -->
+    <path d="M205 240 C215 280 280 340 295 375" stroke="url(#goldSoft)" stroke-width="3" stroke-dasharray="6 3" fill="none" />
+  </g>
+
+  <!-- 6. BABY ARMS & BLESSING HANDS -->
+  <g id="arms" filter="url(#dropShadow)">
+    <!-- RIGHT ARM (Viewer's Left) - ABHAYA MUDRA (BLESSING OF PROTECTION) -->
+    <path d="M185 250 C145 260 130 285 145 320 C155 330 175 320 185 295 Z" fill="url(#skinFace)" />
+    <!-- Golden Wrist Bangle / Kada -->
+    <rect x="136" y="298" width="18" height="8" rx="3" fill="url(#gold3D)" transform="rotate(-20 145 302)" />
+    <!-- Raised Blessing Palm (Abhaya Mudra) -->
+    <circle cx="145" cy="290" r="16" fill="url(#skinFace)" />
+    <!-- Fingers in gentle raised benediction -->
+    <rect x="132" y="268" width="6.5" height="18" rx="3.2" fill="url(#skinFace)" transform="rotate(-12 135 277)" />
+    <rect x="139" y="265" width="6.5" height="20" rx="3.2" fill="url(#skinFace)" transform="rotate(-5 142 275)" />
+    <rect x="147" y="267" width="6.5" height="19" rx="3.2" fill="url(#skinFace)" transform="rotate(3 150 276)" />
+    <rect x="154" y="272" width="6" height="15" rx="3" fill="url(#skinFace)" transform="rotate(10 157 279)" />
+    <!-- Thumb -->
+    <ellipse cx="160" cy="292" rx="5" ry="8" fill="url(#skinFace)" transform="rotate(35 160 292)" />
+    <!-- Sacred Red Auspicious Lotus Mark / Swastika in Palm -->
+    <circle cx="145" cy="290" r="5.5" fill="#e11d48" opacity="0.9" />
+    <circle cx="145" cy="290" r="2.5" fill="url(#gold3D)" />
+
+    <!-- LEFT ARM (Viewer's Right) - HOLDING GOLDEN MODAK -->
+    <path d="M315 250 C355 260 370 285 355 320 C345 330 325 320 315 295 Z" fill="url(#skinFace)" />
+    <!-- Golden Wrist Bangle / Kada -->
+    <rect x="346" y="298" width="18" height="8" rx="3" fill="url(#gold3D)" transform="rotate(20 355 302)" />
+    <!-- Baby Palm Cupping the Sacred Sweet -->
+    <circle cx="355" cy="290" r="16" fill="url(#skinFace)" />
+    <ellipse cx="362" cy="285" rx="5" ry="10" fill="url(#skinFace)" transform="rotate(25 362 285)" />
+    <!-- Golden Modak (Divine Prasadam Sweet) -->
+    <path d="M345 292 C342 278 355 265 358 260 C361 265 374 278 371 292 C369 298 347 298 345 292 Z" fill="url(#goldSoft)" filter="url(#softGlow)" />
+    <!-- Modak pleats and saffron touch -->
+    <path d="M358 260 L354 290" stroke="#b45309" stroke-width="1.5" />
+    <path d="M358 260 L362 290" stroke="#b45309" stroke-width="1.5" />
+    <circle cx="358" cy="261" r="2.5" fill="#ea580c" />
+
+    <!-- Golden Armlets (Bajuband) -->
+    <ellipse cx="172" cy="268" rx="9" ry="5" fill="url(#gold3D)" transform="rotate(25 172 268)" />
+    <ellipse cx="328" cy="268" rx="9" ry="5" fill="url(#gold3D)" transform="rotate(-25 328 268)" />
+  </g>
+
+  <!-- 7. HEAD & ADORABLE 3D BABY FACE -->
+  <g id="head" filter="url(#dropShadow)">
+    <!-- Chubby Head Base -->
+    <ellipse cx="250" cy="215" rx="78" ry="68" fill="url(#skinFace)" />
+    <!-- Sweet Rosy Cheeks -->
+    <ellipse cx="195" cy="235" rx="22" ry="14" fill="#fb7185" opacity="0.45" />
+    <ellipse cx="305" cy="235" rx="22" ry="14" fill="#fb7185" opacity="0.45" />
+
+    <!-- Intricate Baby Hair Curls around Crown -->
+    <path d="M178 185 C185 170 205 175 210 188 C215 172 235 170 240 185 C248 170 265 170 270 185 C275 172 295 172 300 188 C305 175 322 172 328 186" fill="#451a03" />
+
+    <!-- EXPRESSIVE TWINKLING 3D EYES -->
+    <!-- Left Eye -->
+    <g id="leftEye">
+      <ellipse cx="210" cy="202" rx="16" ry="20" fill="#ffffff" />
+      <ellipse cx="212" cy="202" rx="11" ry="14" fill="url(#eyeIris)" />
+      <ellipse cx="213" cy="202" rx="6" ry="8" fill="#09090b" />
+      <!-- Specular Light Reflection (Anime/3D spark) -->
+      <circle cx="209" cy="195" r="4.5" fill="#ffffff" />
+      <circle cx="216" cy="207" r="2.5" fill="#ffffff" />
+      <!-- Cute Upper Eyelid & Lash -->
+      <path d="M194 198 C202 188 222 188 228 198" stroke="#291307" stroke-width="3.5" fill="none" stroke-linecap="round" />
+      <!-- Soft arched eyebrow -->
+      <path d="M196 186 C206 180 220 183 226 188" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- Right Eye -->
+    <g id="rightEye">
+      <ellipse cx="290" cy="202" rx="16" ry="20" fill="#ffffff" />
+      <ellipse cx="288" cy="202" rx="11" ry="14" fill="url(#eyeIris)" />
+      <ellipse cx="287" cy="202" rx="6" ry="8" fill="#09090b" />
+      <!-- Specular Light Reflection (Anime/3D spark) -->
+      <circle cx="285" cy="195" r="4.5" fill="#ffffff" />
+      <circle cx="292" cy="207" r="2.5" fill="#ffffff" />
+      <!-- Cute Upper Eyelid & Lash -->
+      <path d="M272 198 C278 188 298 188 306 198" stroke="#291307" stroke-width="3.5" fill="none" stroke-linecap="round" />
+      <!-- Soft arched eyebrow -->
+      <path d="M274 188 C280 183 294 180 304 186" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    </g>
+
+    <!-- SACRED RED TILAK & CHANDAN ON FOREHEAD -->
+    <g id="tilak">
+      <!-- White Sandalwood Crescent Base -->
+      <path d="M232 178 C242 184 258 184 268 178" stroke="#fef08a" stroke-width="4.5" fill="none" stroke-linecap="round" />
+      <!-- Bright Vermilion Sindoor Vertical Flame (Urdhva Pundra) -->
+      <path d="M250 156 C245 168 245 186 250 188 C255 186 255 168 250 156 Z" fill="#dc2626" />
+      <!-- Center Gold Bindu Dot -->
+      <circle cx="250" cy="178" r="3.5" fill="url(#gold3D)" />
+    </g>
+
+    <!-- ADORABLE CURVED ELEPHANT TRUNK -->
+    <g id="trunk">
+      <!-- Main Trunk Curve flowing left -->
+      <path d="M238 215 C232 245 220 270 200 282 C178 294 175 320 200 326 C225 330 242 305 248 280 C258 240 262 215 262 215 Z" fill="url(#skinFace)" />
+      <!-- Gentle 3D Highlight along Trunk -->
+      <path d="M245 220 C238 248 226 274 205 288 C188 300 186 318 202 322" stroke="#fff7ed" stroke-width="5" fill="none" opacity="0.5" stroke-linecap="round" />
+      <!-- Trunk Tip with Auspicious Golden Modak Touch -->
+      <ellipse cx="194" cy="318" rx="10" ry="8" fill="url(#skinFace)" />
+      <circle cx="192" cy="318" r="4" fill="#ea580c" opacity="0.7" />
+
+      <!-- Golden Vine Ornamentation (Swarna Valli) along Trunk -->
+      <path d="M246 226 C238 248 226 270 210 286" stroke="url(#gold3D)" stroke-width="3" fill="none" />
+      <circle cx="244" cy="234" r="2.5" fill="url(#rubyRed)" />
+      <circle cx="236" cy="252" r="2.5" fill="url(#goldSoft)" />
+      <circle cx="225" cy="270" r="2.5" fill="url(#rubyRed)" />
+      <circle cx="212" cy="286" r="2.5" fill="url(#goldSoft)" />
+      <!-- Horizontal sacred ripples on trunk bridge -->
+      <path d="M242 225 C246 227 254 227 258 225" stroke="#fdba74" stroke-width="2" fill="none" />
+      <path d="M240 234 C244 236 252 236 256 234" stroke="#fdba74" stroke-width="2" fill="none" />
+
+      <!-- Cute Tiny Right Tusk (Ekadanta) -->
+      <path d="M262 245 C270 250 274 256 272 262 C268 260 264 255 262 250 Z" fill="#ffffff" stroke="#fef08a" stroke-width="1" />
+    </g>
+
+    <!-- Gentle Baby Smile beside trunk -->
+    <path d="M264 238 C272 242 280 240 282 235" stroke="#c2410c" stroke-width="2" fill="none" stroke-linecap="round" />
+  </g>
+
+  <!-- 8. ORNATE ROYAL GOLDEN HALO CROWN (KIREETA MUKUT) -->
+  <g id="crown" filter="url(#dropShadow)">
+    <!-- Crown Base Band with Gem Insets -->
+    <path d="M188 175 C215 162 285 162 312 175 L308 190 C280 178 220 178 192 190 Z" fill="url(#gold3D)" />
+    <!-- Pearl & Ruby studded rim -->
+    <circle cx="205" cy="180" r="3.5" fill="url(#rubyRed)" />
+    <circle cx="220" cy="176" r="3" fill="#fffbeb" />
+    <circle cx="235" cy="174" r="3.5" fill="url(#rubyRed)" />
+    <circle cx="250" cy="173" r="4" fill="#fffbeb" />
+    <circle cx="265" cy="174" r="3.5" fill="url(#rubyRed)" />
+    <circle cx="280" cy="176" r="3" fill="#fffbeb" />
+    <circle cx="295" cy="180" r="3.5" fill="url(#rubyRed)" />
+
+    <!-- Crown Tier 2 (Arched Golden Dome) -->
+    <path d="M196 168 C205 130 220 100 250 82 C280 100 295 130 304 168 C275 158 225 158 196 168 Z" fill="url(#gold3D)" />
+    <!-- Intricate Filigree Center Medallion -->
+    <ellipse cx="250" cy="130" rx="26" ry="32" fill="url(#goldSoft)" stroke="url(#gold3D)" stroke-width="2" />
+    <ellipse cx="250" cy="130" rx="16" ry="22" fill="url(#rubyRed)" />
+    <ellipse cx="246" cy="124" rx="6" ry="9" fill="#ffffff" opacity="0.55" />
+
+    <!-- Radiating Crown Petals / Golden Rays -->
+    <path d="M220 120 C205 105 215 90 230 105 Z" fill="url(#gold3D)" />
+    <path d="M280 120 C295 105 285 90 270 105 Z" fill="url(#gold3D)" />
+    <path d="M235 95 C230 75 245 70 248 88 Z" fill="url(#gold3D)" />
+    <path d="M265 95 C270 75 255 70 252 88 Z" fill="url(#gold3D)" />
+
+    <!-- Crown Crest Spire (Kalash Finial) -->
+    <path d="M245 82 C242 62 250 50 250 42 C250 50 258 62 255 82 Z" fill="url(#gold3D)" />
+    <circle cx="250" cy="42" r="7" fill="url(#rubyRed)" />
+    <circle cx="248" cy="40" r="2.5" fill="#ffffff" />
+  </g>
+
+  <!-- 9. ROYAL JEWELRY NECKLACES (HAAR) -->
+  <g id="necklaces" filter="url(#dropShadow)">
+    <!-- First Choker Necklace -->
+    <path d="M210 262 C230 278 270 278 290 262" stroke="url(#gold3D)" stroke-width="5" fill="none" />
+    <circle cx="250" cy="273" r="5" fill="url(#rubyRed)" />
+
+    <!-- Second Long Pearl Mala with Royal Pendant -->
+    <path d="M200 270 C220 305 280 305 300 270" stroke="url(#goldSoft)" stroke-width="3.5" stroke-dasharray="5 3" fill="none" />
+    <!-- Pendant -->
+    <path d="M244 298 L256 298 L250 310 Z" fill="url(#gold3D)" />
+    <circle cx="250" cy="304" r="4" fill="url(#rubyRed)" />
+  </g>
+
+  <!-- 10. AUSPICIOUS CELESTIAL SPARKLES -->
+  <g fill="#fef08a" opacity="0.85">
+    <!-- Top Left Sparkle -->
+    <path d="M110 90 Q120 90 120 80 Q120 90 130 90 Q120 90 120 100 Q120 90 110 90 Z" />
+    <!-- Top Right Sparkle -->
+    <path d="M370 95 Q380 95 380 85 Q380 95 390 95 Q380 95 380 105 Q380 95 370 95 Z" />
+    <!-- Mid Left Sparkle -->
+    <path d="M80 330 Q88 330 88 322 Q88 330 96 330 Q88 330 88 338 Q88 330 80 330 Z" />
+    <!-- Mid Right Sparkle -->
+    <path d="M410 320 Q418 320 418 312 Q418 320 426 320 Q418 320 418 328 Q418 320 410 320 Z" />
+  </g>
+</svg>
