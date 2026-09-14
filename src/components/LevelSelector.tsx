@@ -1,9 +1,9 @@
 import React from 'react';
 import { Lock, Star, ChevronRight, Sparkles, Trophy } from 'lucide-react';
 import { LEVELS } from '../data/gameData';
-import { Character } from './Character';
 import { GaneshaLogo } from './GaneshaLogo';
 import { soundService } from '../services/audioService';
+import { useI18n } from '../i18n/LanguageContext';
 
 interface LevelSelectorProps {
   unlockedLevels: number[];
@@ -22,6 +22,8 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
   onBackToMenu,
   playerName
 }) => {
+  const { t, getLevelData } = useI18n();
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 flex flex-col items-center animate-fade-in">
       {/* Top Header */}
@@ -34,19 +36,20 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
           <span>The Sacred Odyssey</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black font-cinzel text-amber-100">
-          Chapters of Wisdom
+          {t.levelMap.title}
         </h2>
         <p className="text-xs text-stone-300 mt-1 max-w-md mx-auto">
-          Welcome, {playerName || 'Pilgrim'}. Choose an unlocked chapter to explore the story, solve challenges, and gather divine wisdom.
+          {t.common.welcome}, {playerName || t.common.pilgrim}. {t.levelMap.subtitle}
         </p>
       </div>
 
       {/* Chapters Grid / Vertical Timeline */}
       <div className="w-full space-y-4 max-w-2xl">
-        {LEVELS.map((lvl, index) => {
+        {LEVELS.map((lvl) => {
           const isUnlocked = unlockedLevels.includes(lvl.id);
           const isCompleted = unlockedLevels.includes(lvl.id + 1) || (lvl.id === 5 && isUnlocked && levelScores[5] > 0);
           const score = levelScores[lvl.id] || 0;
+          const localizedLvl = getLevelData(lvl.id);
 
           return (
             <div
@@ -72,23 +75,23 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
                 <div>
                   <div className="flex items-center justify-center sm:justify-start gap-2">
                     <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 font-cinzel">
-                      Chapter {lvl.id}
+                      {t.common.level} {lvl.id}
                     </span>
                     {isCompleted && (
                       <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/40">
-                        Completed
+                        {t.common.completed}
                       </span>
                     )}
                   </div>
                   <h3 className="text-lg font-bold font-cinzel text-amber-100 mt-0.5">
-                    {lvl.title}
+                    {localizedLvl.title}
                   </h3>
-                  <p className="text-xs text-stone-300 mt-0.5 font-sans">{lvl.subtitle}</p>
+                  <p className="text-xs text-stone-300 mt-0.5 font-sans">{localizedLvl.subtitle}</p>
 
                   {score > 0 && (
                     <div className="flex items-center gap-1.5 text-xs text-amber-300 mt-1 font-semibold">
                       <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Best: {score.toLocaleString()} pts</span>
+                      <span>Best: {score.toLocaleString()} {t.common.pts}</span>
                     </div>
                   )}
                 </div>
@@ -109,7 +112,13 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
                       : 'bg-stone-800 text-stone-500 cursor-not-allowed'
                   }`}
                 >
-                  <span>{isCompleted ? 'Replay Chapter' : isUnlocked ? 'Enter Chapter' : 'Locked'}</span>
+                  <span>
+                    {isCompleted
+                      ? t.levelMap.replayLevel
+                      : isUnlocked
+                      ? t.levelMap.playLevel
+                      : t.common.locked}
+                  </span>
                   {isUnlocked && <ChevronRight className="w-4 h-4" />}
                 </button>
 
@@ -124,7 +133,7 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
                     className="w-full sm:w-auto px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-200 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all hover:scale-102 active:scale-95"
                     title="Read the chapter story and sacred lore"
                   >
-                    <span>📖 Story & Lore</span>
+                    <span>📖 {t.common.story}</span>
                   </button>
                 )}
               </div>
@@ -143,7 +152,7 @@ export const LevelSelector: React.FC<LevelSelectorProps> = ({
           }}
           className="px-5 py-2 rounded-xl bg-stone-900 border border-stone-700 hover:bg-stone-800 text-stone-300 text-xs font-semibold uppercase tracking-wider transition-colors"
         >
-          ← Return to Main Screen
+          ← {t.common.back}
         </button>
       </div>
     </div>

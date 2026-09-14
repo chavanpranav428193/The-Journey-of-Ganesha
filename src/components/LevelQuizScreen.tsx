@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Sparkles, CheckCircle2, XCircle, RotateCcw, BookOpen, ArrowRight, Award, HelpCircle } from 'lucide-react';
-import { LEVEL_QUIZZES } from '../data/gameData';
 import { soundService } from '../services/audioService';
 import { Character } from './Character';
 import { GaneshaLogo } from './GaneshaLogo';
+import { useI18n } from '../i18n/LanguageContext';
 
 interface LevelQuizScreenProps {
   levelId: number;
@@ -16,14 +16,16 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
   onQuizPassed,
   onReviewStory
 }) => {
-  const quizData = LEVEL_QUIZZES.find((q) => q.levelId === levelId) || LEVEL_QUIZZES[0];
+  const { t, getQuizData } = useI18n();
+  const quizData = getQuizData(levelId);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasAnsweredCurrent, setHasAnsweredCurrent] = useState(false);
   const [answers, setAnswers] = useState<Record<number, { selectedId: string; isCorrect: boolean }>>({});
   const [quizFinished, setQuizFinished] = useState(false);
 
-  const currentQuestion = quizData.questions[currentQuestionIndex];
+  const currentQuestion = quizData.questions[currentQuestionIndex] || quizData.questions[0];
   const totalQuestions = quizData.questions.length;
 
   const handleSelectOption = (optionId: string, isCorrect: boolean) => {
@@ -90,34 +92,40 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-cinzel font-bold mb-2">
             <Award className="w-3.5 h-3.5" />
-            <span>Chapter {levelId} Knowledge Check</span>
+            <span>{t.common.level} {levelId} {t.common.quiz}</span>
           </div>
 
           <h2 className="text-2xl font-bold font-cinzel text-amber-100">
-            {passed ? 'Wisdom Verified!' : 'Continue Learning'}
+            {passed ? t.quiz.passedTitle : t.quiz.retryTitle}
           </h2>
 
           <div className="my-5 p-4 rounded-2xl bg-stone-950/80 border border-stone-800 flex items-center justify-around">
             <div className="text-center">
-              <span className="text-xs text-stone-400 uppercase tracking-wider block">Questions Correct</span>
+              <span className="text-xs text-stone-400 uppercase tracking-wider block">
+                {t.quiz.scoreLabel}
+              </span>
               <span className={`text-3xl font-extrabold font-cinzel ${passed ? 'text-emerald-400' : 'text-amber-400'}`}>
                 {correctCount} / {totalQuestions}
               </span>
             </div>
             <div className="h-10 w-px bg-stone-800" />
             <div className="text-center">
-              <span className="text-xs text-stone-400 uppercase tracking-wider block">Quiz Score</span>
+              <span className="text-xs text-stone-400 uppercase tracking-wider block">
+                {t.quiz.quizScoreEarned}
+              </span>
               <span className="text-3xl font-extrabold font-cinzel text-amber-300">
-                +{quizScore} <span className="text-xs text-amber-400/80">PTS</span>
+                +{quizScore} <span className="text-xs text-amber-400/80">{t.common.pts}</span>
               </span>
             </div>
             {isFlawless && (
               <>
                 <div className="h-10 w-px bg-stone-800" />
                 <div className="text-center">
-                  <span className="text-xs text-stone-400 uppercase tracking-wider block">Flawless Bonus</span>
+                  <span className="text-xs text-stone-400 uppercase tracking-wider block">
+                    {t.quiz.flawlessBonus}
+                  </span>
                   <span className="text-xl font-extrabold font-cinzel text-yellow-300">
-                    +50 <span className="text-xs">PTS</span>
+                    +50 <span className="text-xs">{t.common.pts}</span>
                   </span>
                 </div>
               </>
@@ -127,9 +135,7 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
           {passed ? (
             <div className="space-y-4">
               <p className="text-sm text-stone-300 leading-relaxed max-w-md mx-auto">
-                {isFlawless
-                  ? 'Exemplary understanding! You answered all 3 questions with complete accuracy and deep insight.'
-                  : 'Well done! You have demonstrated a clear grasp of this sacred chapter’s traditional narrative and values.'}
+                {isFlawless ? t.quiz.flawlessMsg : t.quiz.passedDesc}
               </p>
 
               <button
@@ -137,14 +143,14 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
                 onClick={() => onQuizPassed(quizScore, correctCount, isFlawless)}
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-bold font-cinzel text-sm shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all flex items-center justify-center gap-2 mx-auto active:scale-98"
               >
-                <span>View Level Score & Rewards</span>
+                <span>{t.quiz.viewScoreRewards}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           ) : (
             <div className="space-y-4">
               <p className="text-sm text-amber-200/90 leading-relaxed max-w-md mx-auto">
-                A score of at least 2 out of 3 is required to pass this chapter's wisdom check. Review the story narrative and try again to reinforce your learning!
+                {t.quiz.retryDesc}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -154,7 +160,7 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-600 text-stone-200 font-bold font-cinzel text-xs flex items-center justify-center gap-2 transition-all active:scale-98"
                 >
                   <BookOpen className="w-4 h-4 text-amber-400" />
-                  <span>Review Story & Lessons</span>
+                  <span>{t.quiz.reviewStory}</span>
                 </button>
 
                 <button
@@ -163,7 +169,7 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold font-cinzel text-xs flex items-center justify-center gap-2 transition-all active:scale-98 shadow-md"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  <span>Try Quiz Again</span>
+                  <span>{t.quiz.tryAgain}</span>
                 </button>
               </div>
             </div>
@@ -184,7 +190,7 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
           <GaneshaLogo size="sm" />
           <div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 font-cinzel">
-              Chapter {levelId} Quiz
+              {t.common.level} {levelId} {t.common.quiz}
             </span>
             <h3 className="text-sm font-bold text-amber-100 font-cinzel">
               {quizData.levelTitle}
@@ -216,7 +222,9 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
       <div className="w-full bg-stone-900/95 border border-amber-500/40 rounded-3xl p-6 mb-4 shadow-xl">
         <div className="flex items-center gap-2 text-amber-400/90 text-xs font-semibold uppercase tracking-wider mb-2">
           <HelpCircle className="w-4 h-4 text-amber-400" />
-          <span>Question {currentQuestionIndex + 1} of {totalQuestions}</span>
+          <span>
+            {t.quiz.questionCount.replace('{current}', String(currentQuestionIndex + 1)).replace('{total}', String(totalQuestions))}
+          </span>
         </div>
 
         <h2 className="text-lg md:text-xl font-bold font-cinzel text-amber-100 leading-snug mb-5">
@@ -275,7 +283,7 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
               <Sparkles className={`w-5 h-5 shrink-0 mt-0.5 ${isSelectedCorrect ? 'text-emerald-400' : 'text-amber-400'}`} />
               <div className="text-xs leading-relaxed">
                 <p className="font-bold mb-1">
-                  {isSelectedCorrect ? '✨ Correct! +100 Points' : 'Insight to Remember:'}
+                  {isSelectedCorrect ? `✨ ${t.quiz.correctFeedback}` : t.quiz.insightToRemember}
                 </p>
                 <p>{currentQuestion.correctExplanation}</p>
               </div>
@@ -287,7 +295,11 @@ export const LevelQuizScreen: React.FC<LevelQuizScreenProps> = ({
                 onClick={handleNextQuestion}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-bold font-cinzel text-xs flex items-center gap-2 shadow-md active:scale-98 transition-all"
               >
-                <span>{currentQuestionIndex < totalQuestions - 1 ? 'Next Question' : 'Complete Quiz'}</span>
+                <span>
+                  {currentQuestionIndex < totalQuestions - 1
+                    ? t.quiz.nextQuestion
+                    : t.quiz.completeQuiz}
+                </span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

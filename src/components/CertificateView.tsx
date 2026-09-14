@@ -1,26 +1,34 @@
 import React, { useRef } from 'react';
 import { Character } from './Character';
 import { GaneshaLogo } from './GaneshaLogo';
-import { Award, Printer, ArrowLeft, CheckCircle2, QrCode, ShieldCheck } from 'lucide-react';
+import { Printer, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { soundService } from '../services/audioService';
+import { useI18n } from '../i18n/LanguageContext';
+
+import { PlayerProfile } from '../types';
 
 interface CertificateViewProps {
-  playerName: string;
-  finalScore: number;
-  completedDate: string;
-  certificateId: string;
-  onBack: () => void;
+  profile?: PlayerProfile;
+  playerName?: string;
+  finalScore?: number;
+  completedDate?: string;
+  certificateId?: string;
+  onBack?: () => void;
+  onBackToMenu?: () => void;
   onVerifyDirect?: (certId: string) => void;
 }
 
 export const CertificateView: React.FC<CertificateViewProps> = ({
+  profile,
   playerName,
   finalScore,
   completedDate,
   certificateId,
   onBack,
+  onBackToMenu,
   onVerifyDirect
 }) => {
+  const { t } = useI18n();
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -28,13 +36,16 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
     window.print();
   };
 
-  const displayName = playerName?.trim() ? playerName.toUpperCase() : 'PRANAV SHAHAJI CHAVAN';
-  const displayScore = finalScore > 0 ? finalScore.toLocaleString() : '9,250';
-  const displayDate = completedDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  const displayId = certificateId || 'GJ-2026-928471';
+  const resolvedName = profile?.name || playerName || 'PRANAV SHAHAJI CHAVAN';
+  const resolvedScore = profile ? profile.totalScore : (finalScore ?? 0);
+  const resolvedDate = profile?.completedDate || completedDate || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const resolvedId = profile?.certificateId || certificateId || 'GJ-2026-928471';
+  const handleBackAction = onBack || onBackToMenu || (() => {});
 
-  // SVG QR Code representation pointing to verification URL
-  const verifyUrl = `${window.location.origin}/#verify/${displayId}`;
+  const displayName = resolvedName.trim() ? resolvedName.toUpperCase() : 'PRANAV SHAHAJI CHAVAN';
+  const displayScore = resolvedScore > 0 ? resolvedScore.toLocaleString() : '9,250';
+  const displayDate = resolvedDate;
+  const displayId = resolvedId;
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 flex flex-col items-center animate-fade-in">
@@ -42,11 +53,11 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
       <div className="w-full flex items-center justify-between gap-3 mb-6 print:hidden">
         <button
           id="certificate-back-btn"
-          onClick={onBack}
+          onClick={handleBackAction}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-900 border border-stone-700 hover:bg-stone-800 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Summary</span>
+          <span>{t.certificate.backToSummary}</span>
         </button>
 
         <div className="flex items-center gap-3">
@@ -57,7 +68,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-900 border border-amber-500/40 hover:bg-stone-800 text-amber-300 text-xs font-bold uppercase tracking-wider transition-colors"
             >
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>Verify Online</span>
+              <span>{t.certificate.verifyOnline}</span>
             </button>
           )}
 
@@ -67,7 +78,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
             className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 text-xs font-black uppercase tracking-wider shadow-lg active:scale-95 transition-all"
           >
             <Printer className="w-4 h-4" />
-            <span>Print / Save Certificate</span>
+            <span>{t.certificate.printSave}</span>
           </button>
         </div>
       </div>
@@ -100,13 +111,13 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-cinzel text-amber-300 tracking-wider mt-1 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)]">
-            CERTIFICATE OF COMPLETION
+            {t.certificate.title}
           </h1>
 
           <div className="w-48 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent my-4" />
 
           <p className="text-xs uppercase tracking-widest text-stone-400 font-semibold mb-2 font-cinzel">
-            This certifies that
+            {t.certificate.certifiesThat}
           </p>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black font-cinzel text-amber-100 tracking-wide border-b-2 border-amber-500/40 pb-2 px-6">
@@ -114,14 +125,14 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
           </h2>
 
           <p className="text-xs sm:text-sm text-stone-300 max-w-xl text-center leading-relaxed mt-4 font-sans">
-            has successfully completed all 5 chapters of <strong className="text-amber-300">The Journey of Ganesha</strong>, an interactive cultural learning adventure exploring stories, values, traditional lore, and the spiritual wisdom associated with Lord Ganesha and Ganesh Chaturthi.
+            {t.certificate.completionBody}
           </p>
 
           {/* Certificate Metadata Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full max-w-2xl mt-8 pt-6 border-t border-amber-500/30 text-center">
             <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30">
               <span className="text-[10px] uppercase tracking-wider text-amber-400 font-bold block">
-                Final Score
+                {t.certificate.finalScore}
               </span>
               <span className="text-lg font-black font-cinzel text-amber-200">
                 {displayScore}
@@ -130,16 +141,16 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
 
             <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30">
               <span className="text-[10px] uppercase tracking-wider text-amber-400 font-bold block">
-                Chapters
+                {t.certificate.chapters}
               </span>
               <span className="text-lg font-black font-cinzel text-amber-200">
-                5 / 5 Complete
+                5 / 5 {t.common.completed}
               </span>
             </div>
 
             <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30">
               <span className="text-[10px] uppercase tracking-wider text-amber-400 font-bold block">
-                Date Completed
+                {t.certificate.dateCompleted}
               </span>
               <span className="text-xs font-bold font-sans text-stone-200 mt-1 block">
                 {displayDate}
@@ -148,7 +159,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
 
             <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 flex flex-col items-center justify-center">
               <span className="text-[10px] uppercase tracking-wider text-amber-400 font-bold block">
-                Certificate ID
+                {t.certificate.certificateId}
               </span>
               <span className="text-xs font-mono font-bold text-amber-300 mt-0.5">
                 {displayId}
@@ -161,7 +172,6 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
             {/* Left QR Code representation */}
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 bg-white p-1.5 rounded-xl flex items-center justify-center text-stone-950 shadow">
-                {/* SVG QR Code Pattern */}
                 <svg viewBox="0 0 24 24" className="w-full h-full text-stone-900 fill-current">
                   <path d="M2 2h8v8H2V2zm2 2v4h4V4H4zm10-2h8v8h-8V2zm2 2v4h4V4h-4zM2 14h8v8H2v-8zm2 2v4h4v-4H4zm14 2h2v4h-2v-4zm-4-2h2v2h-2v-2zm2 0h2v2h-2v-2zm2 0h2v2h-2v-2zm-6 2h2v4h-2v-4zm2 2h2v2h-2v-2zM5 5h2v2H5V5zm12 0h2v2h-2V5zM5 17h2v2H5v-2z" />
                 </svg>

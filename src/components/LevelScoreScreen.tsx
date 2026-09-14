@@ -3,6 +3,7 @@ import { Award, Sparkles, CheckCircle2, ArrowRight, Zap, Star } from 'lucide-rea
 import { GaneshaLogo } from './GaneshaLogo';
 import { Character } from './Character';
 import { soundService } from '../services/audioService';
+import { useI18n } from '../i18n/LanguageContext';
 
 interface LevelScoreScreenProps {
   levelId: number;
@@ -23,6 +24,9 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
   totalScoreSoFar,
   onProceedToWisdom
 }) => {
+  const { t, getLevelData } = useI18n();
+  const localizedData = getLevelData(levelId);
+
   const levelTotal = gameplayScore + quizScore + bonusScore;
   const [displayedTotal, setDisplayedTotal] = useState(0);
 
@@ -58,26 +62,26 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
 
         <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-cinzel font-bold mb-2">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Chapter {levelId} Complete</span>
+          <span>{t.common.level} {levelId} {t.common.completed}</span>
         </div>
 
         <h2 className="text-2xl font-bold font-cinzel text-amber-100 mb-1">
-          {levelTitle}
+          {localizedData.title}
         </h2>
         <p className="text-xs text-stone-400">
-          Wisdom acquired, duty fulfilled, knowledge verified!
+          {localizedData.subtitle}
         </p>
 
         {/* Big Total Counter */}
         <div className="my-6 py-4 px-6 rounded-2xl bg-gradient-to-b from-amber-950/40 to-stone-950/90 border border-amber-500/30 shadow-inner">
           <span className="text-[11px] font-bold uppercase tracking-widest text-amber-400 font-cinzel block">
-            Chapter Score Earned
+            {t.progression.levelScoreTitle}
           </span>
           <div className="text-4xl sm:text-5xl font-extrabold font-cinzel text-amber-300 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] my-1">
             +{displayedTotal.toLocaleString()}
           </div>
           <span className="text-xs text-stone-400">
-            Journey Total So Far: <span className="font-bold text-amber-200">{(totalScoreSoFar + levelTotal).toLocaleString()} PTS</span>
+            {t.progression.totalScoreLabel}: <span className="font-bold text-amber-200">{(totalScoreSoFar + levelTotal).toLocaleString()} {t.common.pts}</span>
           </span>
         </div>
 
@@ -87,8 +91,8 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <div>
-                <span className="text-xs font-bold text-stone-200 block">Interactive Gameplay</span>
-                <span className="text-[10px] text-stone-400">Challenge execution & problem solving</span>
+                <span className="text-xs font-bold text-stone-200 block">{t.progression.baseScoreLabel}</span>
+                <span className="text-[10px] text-stone-400">Gameplay execution</span>
               </div>
             </div>
             <span className="text-sm font-bold font-cinzel text-amber-300">
@@ -100,8 +104,8 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
             <div className="flex items-center gap-2.5">
               <Award className="w-4 h-4 text-amber-400 shrink-0" />
               <div>
-                <span className="text-xs font-bold text-stone-200 block">Chapter Wisdom Quiz</span>
-                <span className="text-[10px] text-stone-400">Traditional story & context accuracy</span>
+                <span className="text-xs font-bold text-stone-200 block">{t.progression.quizScoreLabel}</span>
+                <span className="text-[10px] text-stone-400">Traditional story accuracy</span>
               </div>
             </div>
             <span className="text-sm font-bold font-cinzel text-amber-300">
@@ -114,12 +118,12 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
               <div className="flex items-center gap-2.5">
                 <Zap className="w-4 h-4 text-yellow-400 shrink-0" />
                 <div>
-                  <span className="text-xs font-bold text-yellow-200 block">Wisdom & Speed Bonuses</span>
-                  <span className="text-[10px] text-stone-400">Flawless quiz, time efficiency & precision</span>
+                  <span className="text-xs font-bold text-yellow-200 block">{t.progression.bonusScoreLabel}</span>
+                  <span className="text-[10px] text-stone-400">Flawless answers & time efficiency</span>
                 </div>
               </div>
               <span className="text-sm font-bold font-cinzel text-yellow-300">
-                +{bonusScore} PTS
+                +{bonusScore} {t.common.pts}
               </span>
             </div>
           )}
@@ -132,7 +136,7 @@ export const LevelScoreScreen: React.FC<LevelScoreScreenProps> = ({
           className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-bold font-cinzel text-sm shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all flex items-center justify-center gap-2 active:scale-98"
         >
           <Star className="w-4 h-4 fill-stone-950" />
-          <span>Reveal Sacred Wisdom Card</span>
+          <span>{t.progression.claimWisdomCard}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

@@ -1,5 +1,6 @@
 export type GameScreen =
   | 'loading'
+  | 'language_select'
   | 'menu'
   | 'player_name'
   | 'how_to_play'
@@ -16,13 +17,24 @@ export type GameScreen =
   | 'wisdom_collection'
   | 'verification';
 
+export type SupportedLanguage = 'en' | 'hi' | 'mr' | 'ta' | 'te' | 'bn' | 'gu' | 'kn';
+
+export interface LanguageOption {
+  code: SupportedLanguage;
+  name: string;
+  nativeName: string;
+  flag: string;
+  sampleGreeting: string;
+}
+
 export type GaneshaExpression =
   | 'welcoming'
   | 'joyful'
   | 'wise'
   | 'meditating'
   | 'blessing'
-  | 'thinking';
+  | 'thinking'
+  | 'focused';
 
 export interface PlayerProfile {
   name: string;
@@ -65,6 +77,7 @@ export interface LevelQuiz {
 }
 
 export interface GameSettings {
+  language: SupportedLanguage;
   music: boolean;
   sfx: boolean;
   reducedMotion: boolean;

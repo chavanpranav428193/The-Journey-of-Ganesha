@@ -6,9 +6,15 @@ interface HowToPlayModalProps {
   isOpen: boolean;
   onClose: () => void;
   onStartJourney?: () => void;
+  onViewProgressionMap?: () => void;
 }
 
-export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose, onStartJourney }) => {
+export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({
+  isOpen,
+  onClose,
+  onStartJourney,
+  onViewProgressionMap
+}) => {
   if (!isOpen) return null;
 
   return (
@@ -96,8 +102,26 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose,
           </div>
         </div>
 
+        {/* View Full Architecture Map Option */}
+        {onViewProgressionMap && (
+          <div className="mt-4 text-center">
+            <button
+              id="guide-view-architecture-btn"
+              onClick={() => {
+                soundService.playClick();
+                onViewProgressionMap();
+              }}
+              className="w-full py-2.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-200 text-xs font-bold font-cinzel flex items-center justify-center gap-2 transition-colors active:scale-98"
+            >
+              <span>🪷</span>
+              <span>View Full Progression Flow Architecture</span>
+              <span>🪷</span>
+            </button>
+          </div>
+        )}
+
         {/* Action Button */}
-        <div className="mt-6 flex gap-3">
+        <div className="mt-5 flex gap-3">
           <button
             id="close-guide-btn"
             onClick={onClose}

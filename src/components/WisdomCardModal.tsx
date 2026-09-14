@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { X, Sparkles, ChevronLeft, ChevronRight, Share2, Check } from 'lucide-react';
-import { WisdomCardData } from '../types';
 import { WISDOM_CARDS } from '../data/gameData';
 import { Character } from './Character';
 import { soundService } from '../services/audioService';
+import { useI18n } from '../i18n/LanguageContext';
 
 interface WisdomCardModalProps {
   isOpen: boolean;
@@ -18,6 +18,8 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
   unlockedCardIds,
   initialCardId = 1
 }) => {
+  const { t, getLevelData } = useI18n();
+
   const [activeIndex, setActiveIndex] = useState(() => {
     const foundIdx = WISDOM_CARDS.findIndex((c) => c.id === initialCardId);
     return foundIdx !== -1 ? foundIdx : 0;
@@ -28,6 +30,8 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
 
   const currentCard = WISDOM_CARDS[activeIndex];
   const isUnlocked = unlockedCardIds.includes(currentCard.id);
+  const localizedData = getLevelData(currentCard.id);
+  const localizedWisdom = localizedData.wisdomCard;
 
   const handleNext = () => {
     soundService.playClick();
@@ -40,7 +44,7 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
   };
 
   const handleShare = () => {
-    const text = `Wisdom of Ganesha - Chapter ${currentCard.id}: "${currentCard.lesson}" - ${currentCard.quote}`;
+    const text = `Wisdom of Ganesha - Chapter ${currentCard.id}: "${localizedWisdom.lesson}" - ${localizedWisdom.quote}`;
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
       setCopied(true);
@@ -56,7 +60,7 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
           id="close-wisdom-card-btn"
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-stone-400 hover:text-white rounded-full bg-stone-900/80 hover:bg-stone-800 transition-colors z-20"
-          aria-label="Close Wisdom Card"
+          aria-label={t.common.close}
         >
           <X className="w-5 h-5" />
         </button>
@@ -64,7 +68,7 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
         {/* Top Header */}
         <div className="text-center mb-3">
           <span className="text-[11px] uppercase tracking-widest font-bold text-amber-400 font-cinzel">
-            Sacred Wisdom Collection
+            {t.wisdomCards.title}
           </span>
           <h3 className="text-lg font-bold font-cinzel text-amber-100">
             Card {activeIndex + 1} of 5
@@ -94,30 +98,30 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
 
               {/* Chapter & Symbol */}
               <span className="text-[11px] font-bold text-amber-300 font-cinzel tracking-wider uppercase">
-                {currentCard.symbol}
+                {currentCard.symbol} • {localizedWisdom.theme}
               </span>
               <h4 className="text-xl font-black font-cinzel text-amber-100 mt-1">
-                {currentCard.chapterTitle}
+                {localizedWisdom.chapterTitle}
               </h4>
 
               {/* Key Lesson */}
               <div className="my-3 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-400/30 w-full">
                 <span className="text-[10px] uppercase font-bold text-amber-300 tracking-wider block">
-                  Core Life Lesson
+                  {t.wisdomCards.lessonLabel}
                 </span>
                 <p className="text-sm font-extrabold text-amber-100 font-sans mt-0.5">
-                  "{currentCard.lesson}"
+                  "{localizedWisdom.lesson}"
                 </p>
               </div>
 
               {/* Quote */}
               <p className="text-xs text-stone-300 italic font-serif leading-relaxed px-2">
-                "{currentCard.quote}"
+                "{localizedWisdom.quote}"
               </p>
 
               {/* Cultural Context */}
               <div className="mt-3 pt-3 border-t border-amber-500/20 text-[11px] text-stone-400 leading-snug">
-                {currentCard.culturalNote}
+                {localizedWisdom.culturalNote}
               </div>
             </div>
           ) : (
@@ -125,9 +129,9 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
               <div className="w-16 h-16 rounded-full bg-stone-800 border border-stone-700 flex items-center justify-center text-3xl mb-3">
                 🔒
               </div>
-              <h4 className="text-base font-bold text-stone-300 font-cinzel">Card Locked</h4>
+              <h4 className="text-base font-bold text-stone-300 font-cinzel">{t.common.locked}</h4>
               <p className="text-xs text-stone-500 max-w-xs mt-1">
-                Complete Chapter {currentCard.id}: {currentCard.chapterTitle} to unveil this sacred wisdom card.
+                {t.wisdomCards.lockedNotice}
               </p>
             </div>
           )}
@@ -177,14 +181,25 @@ export const WisdomCardModal: React.FC<WisdomCardModalProps> = ({
 
         {/* Share Button (if unlocked) */}
         {isUnlocked && (
-          <button
-            id="share-wisdom-card-btn"
-            onClick={handleShare}
-            className="mt-3 flex items-center gap-1.5 text-xs text-amber-400/90 hover:text-amber-200 transition-colors font-medium"
-          >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Wisdom Copied to Clipboard!' : 'Copy Sacred Wisdom'}</span>
-          </button>
+          <div className="mt-4 w-full">
+            <button
+              id="share-wisdom-btn"
+              onClick={handleShare}
+              className="w-full py-2.5 px-4 rounded-xl bg-stone-900 hover:bg-stone-800 border border-amber-500/30 text-amber-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-300">Wisdom Quote Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4" />
+                  <span>{t.wisdomCards.shareCard}</span>
+                </>
+              )}
+            </button>
+          </div>
         )}
       </div>
     </div>

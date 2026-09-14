@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GameScreen, PlayerProfile, AchievementData, GameSettings } from '../types';
+import { GameScreen, PlayerProfile, AchievementData, GameSettings, SupportedLanguage } from '../types';
 import { LEVELS, WISDOM_CARDS, INITIAL_ACHIEVEMENTS } from '../data/gameData';
 import { MainMenu } from './MainMenu';
 import { PlayerNameModal } from './PlayerNameModal';
@@ -15,6 +15,7 @@ import { CertificateVerification } from './CertificateVerification';
 import { LeaderboardModal } from './LeaderboardModal';
 import { HowToPlayModal } from './HowToPlayModal';
 import { SettingsModal } from './SettingsModal';
+import { AchievementsModal } from './AchievementsModal';
 import { AchievementToast } from './AchievementToast';
 import { AudioControls } from './AudioControls';
 import { ScoreDisplay } from './ScoreDisplay';
@@ -25,6 +26,8 @@ import { GaneshaLogo } from './GaneshaLogo';
 import { AiStoryLessonModal } from './AiStoryLessonModal';
 import { AiStoryLessonButton } from './AiStoryLessonButton';
 import { CreatorStoryModal } from './CreatorStoryModal';
+import { JourneyFlowModal } from './JourneyFlowModal';
+import { LanguageSelectionScreen } from './LanguageSelectionScreen';
 
 import { Level1Birth } from './levels/Level1Birth';
 import { Level2Guardian } from './levels/Level2Guardian';
@@ -34,8 +37,11 @@ import { Level5Ganeshotsav } from './levels/Level5Ganeshotsav';
 
 import { soundService } from '../services/audioService';
 import { submitScoreToLeaderboard } from '../services/supabaseService';
+import { LanguageProvider, useI18n } from '../i18n/LanguageContext';
+import { Globe } from 'lucide-react';
 
 const STORAGE_KEY = 'ganesha_journey_profile_v1';
+const LANGUAGE_CHOSEN_KEY = 'ganesha_journey_language_chosen';
 
 function generateCertId(): string {
   const num = Math.floor(100000 + Math.random() * 900000);
@@ -63,22 +69,25 @@ const DEFAULT_PROFILE: PlayerProfile = {
   settings: {
     music: false,
     sfx: true,
-    reducedMotion: false
+    reducedMotion: false,
+    language: 'en'
   }
 };
 
-export const GameShell: React.FC = () => {
-  const [profile, setProfile] = useState<PlayerProfile>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return { ...DEFAULT_PROFILE, ...JSON.parse(saved) };
-      }
-    } catch {
-      // fallback
-    }
-    return DEFAULT_PROFILE;
-  });
+interface GameShellContentProps {
+  profile: PlayerProfile;
+  setProfile: React.Dispatch<React.SetStateAction<PlayerProfile>>;
+  onUpdateSettings: (newSettings: Partial<GameSettings>) => void;
+  onResetProgress: () => void;
+}
+
+const GameShellContent: React.FC<GameShellContentProps> = ({
+  profile,
+  setProfile,
+  onUpdateSettings,
+  onResetProgress
+}) => {
+  const { t, currentLanguageOption, getLevelData } = useI18n();
 
   const [screen, setScreen] = useState<GameScreen>('loading');
   const [selectedLevelId, setSelectedLevelId] = useState<number>(1);
@@ -93,34 +102,30 @@ export const GameShell: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isWisdomModalOpen, setIsWisdomModalOpen] = useState(false);
   const [activeWisdomCardId, setActiveWisdomCardId] = useState<number>(1);
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [activeAchievement, setActiveAchievement] = useState<AchievementData | null>(null);
   const [verifyTargetId, setVerifyTargetId] = useState<string>('GJ-2026-928471');
   const [isAiStoryLessonOpen, setIsAiStoryLessonOpen] = useState(false);
   const [aiStoryLessonLevelId, setAiStoryLessonLevelId] = useState<number>(1);
   const [isCreatorModalOpen, setIsCreatorModalOpen] = useState(false);
+  const [isJourneyFlowOpen, setIsJourneyFlowOpen] = useState(false);
 
-  // Initial cinematic loading screen
+  // Initial cinematic loading & first-launch language screen logic
   useEffect(() => {
     const timer = setTimeout(() => {
-      setScreen('menu');
-    }, 1400);
+      try {
+        const hasChosenLanguage = localStorage.getItem(LANGUAGE_CHOSEN_KEY);
+        if (!hasChosenLanguage) {
+          setScreen('language_select');
+        } else {
+          setScreen('menu');
+        }
+      } catch {
+        setScreen('menu');
+      }
+    }, 1200);
     return () => clearTimeout(timer);
   }, []);
-
-  // Save profile to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-    } catch (e) {
-      console.warn('Could not save to localStorage', e);
-    }
-  }, [profile]);
-
-  // Sync settings with soundService
-  useEffect(() => {
-    soundService.setMusicEnabled(profile.settings.music);
-    soundService.setSfxEnabled(profile.settings.sfx);
-  }, [profile.settings.music, profile.settings.sfx]);
 
   // Hash route detector (e.g. #verify/GJ-2026-928471)
   useEffect(() => {
@@ -139,7 +144,7 @@ export const GameShell: React.FC = () => {
 
   const handleTimeUpdate = useCallback(() => {
     setProfile((prev) => ({ ...prev, totalTimeElapsed: prev.totalTimeElapsed + 1 }));
-  }, []);
+  }, [setProfile]);
 
   const triggerAchievement = (id: string) => {
     if (profile.unlockedAchievements.includes(id)) return;
@@ -158,7 +163,7 @@ export const GameShell: React.FC = () => {
   };
 
   const handleStartFromMenu = () => {
-    if (!profile.name || profile.name === 'Pranav Shahaji Chavan') {
+    if (!profile.name || profile.name.trim() === '' || profile.name === DEFAULT_PROFILE.name) {
       setScreen('player_name');
     } else {
       setScreen('level_select');
@@ -179,18 +184,17 @@ export const GameShell: React.FC = () => {
     setScreen('gameplay');
   };
 
-  // Called when player finishes the interactive gameplay section
-  const handleLevelCompleted = (gameplayScore: number, bonusScore: number = 0) => {
-    setCurrentGameplayScore(gameplayScore);
-    setCurrentBonusScore(bonusScore);
-    setRecentDelta(gameplayScore);
+  // Called by mini-game when interactive gameplay challenge is completed
+  const handleLevelCompleted = (score: number, bonus: number = 0) => {
+    soundService.playLevelComplete();
+    setCurrentGameplayScore(score);
+    setCurrentBonusScore(bonus);
+    setRecentDelta(score + bonus);
     setTimeout(() => setRecentDelta(null), 3000);
 
-    // Transition to Educational Insight
     setScreen('educational_insight');
   };
 
-  // Proceed from Educational Insight to mandatory 3-question quiz
   const handleProceedToQuiz = () => {
     setScreen('level_quiz');
   };
@@ -294,25 +298,9 @@ export const GameShell: React.FC = () => {
     }
   };
 
-  const handleUpdateSettings = (newSettings: Partial<GameSettings>) => {
-    setProfile((prev) => ({
-      ...prev,
-      settings: { ...prev.settings, ...newSettings }
-    }));
-  };
-
-  const handleResetProgress = () => {
-    const fresh: PlayerProfile = {
-      ...DEFAULT_PROFILE,
-      name: profile.name,
-      certificateId: generateCertId()
-    };
-    setProfile(fresh);
-    setScreen('menu');
-  };
-
   const currentLevelConfig = LEVELS.find((l) => l.id === selectedLevelId) || LEVELS[0];
   const currentWisdomCard = WISDOM_CARDS.find((w) => w.levelId === selectedLevelId) || WISDOM_CARDS[0];
+  const localizedCurrentLevel = getLevelData(selectedLevelId);
 
   return (
     <div
@@ -335,7 +323,7 @@ export const GameShell: React.FC = () => {
             <GaneshaLogo size="sm" showGlow={true} alt="The Journey of Ganesha Logo" />
             <div>
               <span className="font-bold text-xs tracking-wider text-amber-200 font-cinzel block group-hover:text-amber-100 transition-colors">
-                THE JOURNEY OF GANESHA
+                {t.mainMenu.title}
               </span>
               <span className="text-[10px] text-stone-400 font-mono hidden sm:block">
                 Ganesh Chaturthi Learning Game
@@ -344,7 +332,7 @@ export const GameShell: React.FC = () => {
           </button>
 
           {/* Center Progress Bar (Visible during gameplay & level selection) */}
-          {screen !== 'loading' && screen !== 'menu' && screen !== 'certificate' && (
+          {screen !== 'loading' && screen !== 'language_select' && screen !== 'menu' && screen !== 'certificate' && (
             <div className="hidden lg:block flex-1 max-w-md mx-4">
               <ProgressBar
                 currentLevel={selectedLevelId}
@@ -357,9 +345,26 @@ export const GameShell: React.FC = () => {
             </div>
           )}
 
-          {/* Right Controls (Score & Audio) */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Controls (Language Switcher, Score & Audio) */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Quick Language Switcher Button */}
             {screen !== 'loading' && (
+              <button
+                id="header-language-btn"
+                onClick={() => {
+                  soundService.playClick();
+                  setScreen('language_select');
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-200 text-xs font-medium transition-all active:scale-95"
+                title="Change Language / भाषा बदलें"
+                aria-label="Select Language"
+              >
+                <Globe className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-xs font-bold font-sans hidden xs:inline">{currentLanguageOption.nativeName}</span>
+              </button>
+            )}
+
+            {screen !== 'loading' && screen !== 'language_select' && (
               <ScoreDisplay score={profile.totalScore} recentDelta={recentDelta} />
             )}
 
@@ -368,11 +373,11 @@ export const GameShell: React.FC = () => {
               sfxEnabled={profile.settings.sfx}
               onToggleMusic={() => {
                 const next = !profile.settings.music;
-                handleUpdateSettings({ music: next });
+                onUpdateSettings({ music: next });
               }}
               onToggleSfx={() => {
                 const next = !profile.settings.sfx;
-                handleUpdateSettings({ sfx: next });
+                onUpdateSettings({ sfx: next });
               }}
             />
           </div>
@@ -398,6 +403,26 @@ export const GameShell: React.FC = () => {
           </div>
         )}
 
+        {/* First-Launch / Switcher Language Selection Screen */}
+        {screen === 'language_select' && (
+          <LanguageSelectionScreen
+            currentLanguage={profile.settings.language || 'en'}
+            onSelectLanguage={(lang) => {
+              onUpdateSettings({ language: lang });
+            }}
+            onConfirm={() => {
+              try {
+                localStorage.setItem(LANGUAGE_CHOSEN_KEY, 'true');
+              } catch {
+                // ignore
+              }
+              setScreen('menu');
+            }}
+            canCancel={profile.unlockedLevels.length > 1 || profile.totalScore > 0}
+            onCancel={() => setScreen('menu')}
+          />
+        )}
+
         {/* Main Landing Screen */}
         {screen === 'menu' && (
           <MainMenu
@@ -407,6 +432,8 @@ export const GameShell: React.FC = () => {
             onSettings={() => setIsSettingsOpen(true)}
             onVerify={() => setScreen('verification')}
             onAboutCreator={() => setIsCreatorModalOpen(true)}
+            onProgressionMap={() => setIsJourneyFlowOpen(true)}
+            onOpenLanguage={() => setScreen('language_select')}
             playerName={profile.name}
             hasExistingProgress={profile.unlockedLevels.length > 1 || profile.totalScore > 0}
           />
@@ -461,12 +488,12 @@ export const GameShell: React.FC = () => {
                 }}
                 className="text-xs font-semibold text-stone-400 hover:text-amber-300 transition-colors"
               >
-                ← Map
+                ← {t.common.back}
               </button>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold font-cinzel text-amber-300">
-                  Chapter {selectedLevelId}: {currentLevelConfig.title}
+                  {t.common.level} {selectedLevelId}: {localizedCurrentLevel.title}
                 </span>
                 <AiStoryLessonButton
                   variant="compact"
@@ -529,7 +556,7 @@ export const GameShell: React.FC = () => {
         {screen === 'level_score' && (
           <LevelScoreScreen
             levelId={selectedLevelId}
-            levelTitle={currentLevelConfig.title}
+            levelTitle={localizedCurrentLevel.title}
             gameplayScore={currentGameplayScore}
             quizScore={currentQuizScore}
             bonusScore={currentBonusScore}
@@ -546,6 +573,7 @@ export const GameShell: React.FC = () => {
             totalTimeElapsed={profile.totalTimeElapsed}
             unlockedAchievementsCount={profile.unlockedAchievements.length}
             unlockedWisdomCardsCount={profile.unlockedWisdomCards.length}
+            onViewAchievements={() => setIsAchievementsOpen(true)}
             onViewCertificate={() => setScreen('certificate')}
             onViewWisdomCollection={() => {
               setActiveWisdomCardId(1);
@@ -584,7 +612,7 @@ export const GameShell: React.FC = () => {
       <footer className="w-full bg-stone-950/90 border-t border-stone-800/80 px-4 py-3 text-center text-stone-400 text-xs print:hidden">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>
-            🐘 <strong>The Journey of Ganesha</strong> • Ganesh Chaturthi Game Design Contest
+            🐘 <strong>{t.mainMenu.title}</strong> • Ganesh Chaturthi Game Design Contest
           </span>
           <div className="flex items-center gap-4 text-[11px]">
             <button
@@ -598,7 +626,7 @@ export const GameShell: React.FC = () => {
               onClick={() => setIsHowToPlayOpen(true)}
               className="hover:text-amber-300 transition-colors"
             >
-              How to Play
+              {t.mainMenu.howToPlay}
             </button>
             <span>•</span>
             <button
@@ -608,14 +636,14 @@ export const GameShell: React.FC = () => {
               }}
               className="hover:text-amber-300 transition-colors"
             >
-              Wisdom Cards ({profile.unlockedWisdomCards.length}/5)
+              {t.wisdomCards.title} ({profile.unlockedWisdomCards.length}/5)
             </button>
             <span>•</span>
             <button
               onClick={() => setIsLeaderboardOpen(true)}
               className="hover:text-amber-300 transition-colors"
             >
-              Leaderboard
+              {t.mainMenu.leaderboard}
             </button>
           </div>
         </div>
@@ -636,14 +664,18 @@ export const GameShell: React.FC = () => {
           setIsHowToPlayOpen(false);
           handleStartFromMenu();
         }}
+        onViewProgressionMap={() => {
+          setIsHowToPlayOpen(false);
+          setIsJourneyFlowOpen(true);
+        }}
       />
 
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         settings={profile.settings}
-        onUpdateSettings={handleUpdateSettings}
-        onResetProgress={handleResetProgress}
+        onUpdateSettings={onUpdateSettings}
+        onResetProgress={onResetProgress}
         playerName={profile.name}
       />
 
@@ -652,6 +684,38 @@ export const GameShell: React.FC = () => {
         onClose={() => setIsWisdomModalOpen(false)}
         unlockedCardIds={profile.unlockedWisdomCards}
         initialCardId={activeWisdomCardId}
+      />
+
+      {/* Badges & Achievements Modal */}
+      <AchievementsModal
+        isOpen={isAchievementsOpen}
+        onClose={() => setIsAchievementsOpen(false)}
+        unlockedAchievementIds={profile.unlockedAchievements}
+      />
+
+      {/* Sacred Progression Architecture Flow Modal */}
+      <JourneyFlowModal
+        isOpen={isJourneyFlowOpen}
+        onClose={() => setIsJourneyFlowOpen(false)}
+        currentLevelId={selectedLevelId}
+        unlockedLevelsCount={profile.unlockedLevels.length}
+        wisdomCardsCount={profile.unlockedWisdomCards.length}
+        achievementsCount={profile.unlockedAchievements.length}
+        hasCompletedJourney={!!profile.completedDate || profile.unlockedLevels.length >= 5}
+        onSelectLevel={(lvlId) => {
+          setSelectedLevelId(lvlId);
+          setScreen('story_intro');
+        }}
+        onOpenAiGuide={() => {
+          setAiStoryLessonLevelId(selectedLevelId);
+          setIsAiStoryLessonOpen(true);
+        }}
+        onViewWisdom={() => {
+          setActiveWisdomCardId(selectedLevelId);
+          setIsWisdomModalOpen(true);
+        }}
+        onViewCertificate={() => setScreen('certificate')}
+        onViewLeaderboard={() => setIsLeaderboardOpen(true)}
       />
 
       {/* Achievement Unlock Toast */}
@@ -683,5 +747,70 @@ export const GameShell: React.FC = () => {
         }}
       />
     </div>
+  );
+};
+
+export const GameShell: React.FC = () => {
+  const [profile, setProfile] = useState<PlayerProfile>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return { ...DEFAULT_PROFILE, ...JSON.parse(saved) };
+      }
+    } catch {
+      // fallback
+    }
+    return DEFAULT_PROFILE;
+  });
+
+  // Save profile to localStorage whenever it updates
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+    } catch (e) {
+      console.warn('Could not save profile to localStorage', e);
+    }
+  }, [profile]);
+
+  // Sync audio settings with soundService
+  useEffect(() => {
+    soundService.setMusicEnabled(profile.settings.music);
+    soundService.setSfxEnabled(profile.settings.sfx);
+  }, [profile.settings.music, profile.settings.sfx]);
+
+  const handleUpdateSettings = (newSettings: Partial<GameSettings>) => {
+    setProfile((prev) => ({
+      ...prev,
+      settings: { ...prev.settings, ...newSettings }
+    }));
+  };
+
+  const handleResetProgress = () => {
+    const fresh: PlayerProfile = {
+      ...DEFAULT_PROFILE,
+      name: profile.name,
+      certificateId: generateCertId(),
+      settings: {
+        ...DEFAULT_PROFILE.settings,
+        language: profile.settings.language
+      }
+    };
+    setProfile(fresh);
+  };
+
+  const activeLanguage = profile.settings.language || 'en';
+
+  return (
+    <LanguageProvider
+      language={activeLanguage}
+      onLanguageChange={(newLang) => handleUpdateSettings({ language: newLang })}
+    >
+      <GameShellContent
+        profile={profile}
+        setProfile={setProfile}
+        onUpdateSettings={handleUpdateSettings}
+        onResetProgress={handleResetProgress}
+      />
+    </LanguageProvider>
   );
 };
